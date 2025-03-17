@@ -1,0 +1,64 @@
+Pt_dBm = 30;   
+Gt_dB = 10;    
+Gr_dB = 10;    
+f = 2.4e9;     
+d_max = 10000; 
+d = linspace(100, d_max, 100);  
+
+c = 3e8;       
+receiver_sensitivity_dBm = -90; 
+
+Lfs = 20*log10(d) + 20*log10(f) + 20*log10(4*pi/c);  
+Pr_dBm_fs = Pt_dBm + Gt_dB + Gr_dB - Lfs;  
+
+h_t = 50;  % Height of the transmitter in meters
+h_r = 50;  % Height of the receiver in meters
+Ltwo_ray = 20*log10(d) + 20*log10(f) + 20*log10(4*pi/c) - 40*log10(h_t * h_r ./ d.^2);
+Pr_dBm_two_ray = Pt_dBm + Gt_dB + Gr_dB - Ltwo_ray;
+
+Litu = 20*log10(d) + 20*log10(f) + 20*log10(4*pi/c) + 5*log10(d/1000) - 0.5;
+Pr_dBm_itu = Pt_dBm + Gt_dB + Gr_dB - Litu;  
+
+figure;
+
+subplot(2,2,1);
+plot(d, Pr_dBm_fs, 'b', 'LineWidth', 2);
+hold on;
+plot(d, receiver_sensitivity_dBm * ones(size(d)), 'r--', 'LineWidth', 2);
+title('Free-space Path Loss (FSPL)');
+xlabel('Distance (m)');
+ylabel('Received Power (dBm)');
+legend('Received Power', 'Receiver Sensitivity');
+grid on;
+
+subplot(2,2,2);
+plot(d, Pr_dBm_two_ray, 'g', 'LineWidth', 2);
+hold on;
+plot(d, receiver_sensitivity_dBm * ones(size(d)), 'r--', 'LineWidth', 2);
+title('Two-ray Ground Reflection Model');
+xlabel('Distance (m)');
+ylabel('Received Power (dBm)');
+legend('Received Power', 'Receiver Sensitivity');
+grid on;
+
+subplot(2,2,3);
+plot(d, Pr_dBm_itu, 'm', 'LineWidth', 2);
+hold on;
+plot(d, receiver_sensitivity_dBm * ones(size(d)), 'r--', 'LineWidth', 2);
+title('Satellite/Long-range (ITU-R P.1546)');
+xlabel('Distance (m)');
+ylabel('Received Power (dBm)');
+legend('Received Power', 'Receiver Sensitivity');
+grid on;
+
+subplot(2,2,4);
+plot(d, Pr_dBm_fs, 'b', 'LineWidth', 2);
+hold on;
+plot(d, Pr_dBm_two_ray, 'g', 'LineWidth', 2);
+plot(d, Pr_dBm_itu, 'm', 'LineWidth', 2);
+plot(d, receiver_sensitivity_dBm * ones(size(d)), 'r--', 'LineWidth', 2);
+title('Comparison of Path Loss Models');
+xlabel('Distance (m)');
+ylabel('Received Power (dBm)');
+legend('Free-space Path Loss', 'Two-ray Ground Reflection', 'Satellite/Long-range (ITU-R)', 'Receiver Sensitivity');
+grid on;
